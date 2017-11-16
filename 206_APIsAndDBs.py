@@ -107,13 +107,11 @@ cur.execute('''CREATE TABLE Users (user_id TEXT PRIMARY KEY, screen_name TEXT, n
 cur.execute('''CREATE TABLE Tweets (tweet_id TEXT PRIMARY KEY, text TEXT, user_posted TEXT REFERENCES Users(user_id), time_posted DATETIME, retweets INTEGER)''')
 for tweet in umich_tweets:
 	#writing info into User Table for @umich
-	userid = tweet["user"]["id_str"]
-	screenname = tweet["user"]["screen_name"]
-	favcount = tweet["user"]["favourites_count"]
-	userdescription = tweet["user"]["description"]
+	usertup = (tweet["user"]["id_str"], tweet["user"]["screen_name"], tweet["user"]["favourites_count"], tweet["user"]["description"])
 	cur.execute('''INSERT or IGNORE INTO Users (user_id, screen_name, num_favs, description) VALUES (?,?,?,?)'''
-		, (userid, screenname, favcount, userdescription))
+		, (usertup))
 	#writing info into User Table for users mentioned
+	# if "screen_name" not in tweet["user"]["screen_name"]
 	for umtweet in tweet["entities"]["user_mentions"]:
 		usermid = umtweet["id_str"]
 		mscreenname = umtweet["screen_name"]
@@ -128,12 +126,9 @@ for tweet in umich_tweets:
 # NOTE: Be careful that you have the correct user ID reference in 
 # the user_id column! See below hints.
 	#writing info into Tweet Table for all 20 tweets from @umich timeline
-	tweetid = tweet["id_str"]
-	tweettext = tweet["text"]
-	timeposted = tweet["created_at"]
-	retweetcount = tweet["retweet_count"]
+	tweettup = (tweet["id_str"], tweet["text"], tweet["user"]["id_str"], tweet["created_at"], tweet["retweet_count"])
 	cur.execute('''INSERT or IGNORE INTO Tweets (tweet_id, text, user_posted, time_posted, retweets) VALUES (?,?,?,?,?)'''
-		, (tweetid, tweettext, userid, timeposted, retweetcount))  
+		, (tweettup))  
 	
 conn.commit()
 
@@ -175,10 +170,9 @@ print(screen_names)
 # that have been retweeted more than 10 times. Save the result 
 # (a list of tuples, or an empty list) in a variable called retweets.
 retweets = []
-retweetinfo = cur.execute("SELECT * FROM Tweets")
+retweetinfo = cur.execute("SELECT * FROM Tweets WHERE retweets > 10")
 for row in retweetinfo:
-	if row[4] > 10:
-		retweets.append(row)
+	retweets.append(row)
 print(retweets)
 
 
@@ -187,25 +181,29 @@ print(retweets)
 # strings, and save them in a variable called favorites, 
 # which should ultimately be a list of strings.
 favorites = []
-userdescript = cur.execute("SELECT * FROM Users")
+userdescript = cur.execute("SELECT description FROM Users WHERE num_favs > 500")
 for row in userdescript:
-	if row[2] > 500:
-		favorites.append(row[3])
+		favorites.append(row[0])
 print(favorites) 
-cur.close()
 
 # Make a query using an INNER JOIN to get a list of tuples with 2 
 # elements in each tuple: the user screenname and the text of the 
 # tweet. Save the resulting list of tuples in a variable called joined_data2.
-joined_data = True
-
+joined_data = []
+nameandtweet = cur.execute("SELECT screen_name, text FROM Users INNER JOIN Tweets WHERE user_posted = user_id")
+for row in nameandtweet:
+	joined_data.append(row)
+print(joined_data)
 # Make a query using an INNER JOIN to get a list of tuples with 2 
 # elements in each tuple: the user screenname and the text of the 
 # tweet in descending order based on retweets. Save the resulting 
 # list of tuples in a variable called joined_data2.
-
-joined_data2 = True
-
+joined_data2 = []
+nameandtweet2 = cur.execute("SELECT screen_name, text FROM Users INNER JOIN Tweets WHERE user_posted = user_id ORDER BY retweets DESC")
+for row in nameandtweet2:
+	joined_data2.append(row)	
+print(joined_data2)
+cur.close()
 ### IMPORTANT: MAKE SURE TO CLOSE YOUR DATABASE CONNECTION AT THE END 
 ### OF THE FILE HERE SO YOU DO NOT LOCK YOUR DATABASE (it's fixable, 
 ### but it's a pain). ###
