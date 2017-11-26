@@ -90,7 +90,7 @@ def get_user_tweets(user):
 # save the result in a variable called umich_tweets:
 
 # store the results of get_user_tweets(“@umich”)
-umich_tweets = get_user_tweets("@realdonaldtrump")
+umich_tweets = get_user_tweets("@umich")
 
 ## Task 2 - Creating database and loading data into database
 ## You should load into the Users table:
