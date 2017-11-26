@@ -90,7 +90,7 @@ def get_user_tweets(user):
 # save the result in a variable called umich_tweets:
 
 # store the results of get_user_tweets(“@umich”)
-umich_tweets = get_user_tweets("@umich")
+umich_tweets = get_user_tweets("@realdonaldtrump")
 
 ## Task 2 - Creating database and loading data into database
 ## You should load into the Users table:
@@ -161,6 +161,7 @@ users_info = []
 data = cur.execute("SELECT * FROM Users")
 for row in data:
 		users_info.append(row)	
+print(users_info)
 # Make a query to select all of the user screen names from the database. 
 # Save a resulting list of strings (NOT tuples, the strings inside them!) 
 # in the variable screen_names. HINT: a list comprehension will make 
@@ -170,6 +171,7 @@ screen_names = []
 names = cur.execute("SELECT screen_name FROM Users")
 for row in names:
 	screen_names.append(row[0])
+print(screen_names)
 # Make a query to select all of the tweets (full rows of tweet information)
 # that have been retweeted more than 10 times. Save the result 
 # (a list of tuples, or an empty list) in a variable called retweets.
@@ -178,6 +180,7 @@ retweets = []
 retweetinfo = cur.execute("SELECT * FROM Tweets WHERE retweets > 10")
 for row in retweetinfo:
 	retweets.append(row)
+print(retweets)
 # Make a query to select all the descriptions (descriptions only) of 
 # the users who have favorited more than 500 tweets. Access all those 
 # strings, and save them in a variable called favorites, 
@@ -187,6 +190,7 @@ favorites = []
 userdescript = cur.execute("SELECT description FROM Users WHERE num_favs > 500")
 for row in userdescript:
 		favorites.append(row[0])
+print(favorites)
 # Make a query using an INNER JOIN to get a list of tuples with 2 
 # elements in each tuple: the user screenname and the text of the 
 # tweet. Save the resulting list of tuples in a variable called joined_data2.
@@ -195,6 +199,7 @@ joined_data = []
 nameandtweet = cur.execute("SELECT screen_name, text FROM Users INNER JOIN Tweets WHERE user_posted = user_id")
 for row in nameandtweet:
 	joined_data.append(row)
+print(joined_data)
 # Make a query using an INNER JOIN to get a list of tuples with 2 
 # elements in each tuple: the user screenname and the text of the 
 # tweet in descending order based on retweets. Save the resulting 
@@ -203,7 +208,8 @@ joined_data2 = []
 # retrieving screen name and text based on descending order of retweets and returning as list of tuples
 nameandtweet2 = cur.execute("SELECT screen_name, text FROM Users INNER JOIN Tweets WHERE user_posted = user_id ORDER BY retweets DESC")
 for row in nameandtweet2:
-	joined_data2.append(row)	
+	joined_data2.append(row)
+print (joined_data2)	
 cur.close()
 ### IMPORTANT: MAKE SURE TO CLOSE YOUR DATABASE CONNECTION AT THE END 
 ### OF THE FILE HERE SO YOU DO NOT LOCK YOUR DATABASE (it's fixable, 
